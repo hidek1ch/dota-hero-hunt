@@ -173,15 +173,19 @@ const TAG_FRAG={
  transform:"менять собственный режим действий по ходу эпизода",displace:"нарушать удобное расположение других участников",economy:"быстрее превращать ресурсы карты в боевую силу",timing:"дожидаться точного окна для сильного действия",
  position:"заранее готовить выгодную точку для следующего действия",target:"сосредотачивать давление на одной выбранной цели",tempo:"не отдавать инициативу после успешного первого действия"
 };
-const PAIR_TEMPLATES=[
- (a,b)=>`В удачном эпизоде персонажу важно ${a}, а затем ${b}.`,
- (a,b)=>`Обычно персонаж ищет возможность ${a}; продолжение становится сильнее, если удаётся ${b}.`,
- (a,b)=>`Стиль игры часто строится вокруг двух вещей: ${a} и ${b}.`,
- (a,b)=>`Перед активным столкновением полезно создать условия, чтобы ${a}, после чего ${b}.`,
- (a,b)=>`Персонаж чувствует себя увереннее, когда может ${a} и одновременно ${b}.`,
- (a,b)=>`Хорошая реализация набора требует сначала ${a}, а по ходу драки — ${b}.`,
- (a,b)=>`Вместо простого обмена уроном персонажу выгоднее ${a}, используя это окно, чтобы ${b}.`,
- (a,b)=>`Сильный отрезок начинается, когда получается ${a}; дальше задача — ${b}.`
+const OPENER_TEMPLATES=[
+ frag=>`В начале эпизода персонажу особенно важно уметь ${frag}.`,
+ frag=>`Первое преимущество обычно появляется, когда персонажу удаётся ${frag}.`,
+ frag=>`Один из ориентиров при игре за персонажа — вовремя ${frag}.`,
+ frag=>`До раскрытия основных механик полезно заметить стремление персонажа ${frag}.`,
+ frag=>`В драке персонаж часто ищет ситуацию, где можно ${frag}.`,
+ frag=>`План на столкновение нередко начинается с возможности ${frag}.`,
+ frag=>`Комфортный эпизод для персонажа — тот, где получается ${frag}.`,
+ frag=>`Вместо прямого обмена уроном персонаж часто старается ${frag}.`,
+ frag=>`Ключ к удобному началу драки — возможность ${frag}.`,
+ frag=>`По стилю игры персонажа можно узнать по стремлению ${frag}.`,
+ frag=>`До решающего действия персонаж старается создать условия, чтобы ${frag}.`,
+ frag=>`Первый заметный ориентир: персонажу выгодно ${frag}.`
 ];
 const SIGNATURE_FACT={
  "Alchemist":1,"Bristleback":0,"Chaos Knight":1,"Clockwerk":0,"Dawnbreaker":0,"Doom":1,"Dragon Knight":1,"Earth Spirit":0,
@@ -192,54 +196,36 @@ const SIGNATURE_FACT={
  "Techies":0,"Visage":0,"Windranger":0
 };
 const CUSTOM_OPENERS={
- "Kunkka":[
-  "Персонажу выгодно заранее понимать траекторию драки: часть действий сильнее, если противник продолжает двигаться предсказуемо.",
-  "В наборе сочетаются давление обычными атаками и эффекты, которым нужно немного времени, чтобы полностью реализоваться."
- ],
- "Morphling":[
-  "Запас здоровья и наносимый урон у персонажа тесно связаны: во время драки приходится постоянно выбирать, чего сейчас нужно больше.",
-  "Персонаж способен резко менять дистанцию и подстраивать собственное состояние под конкретный момент столкновения."
- ],
- "Pudge":[
-  "Персонаж особенно опасен рядом с узкими проходами и позициями, где противнику трудно быстро исправить ошибку движения.",
-  "После успешного начала персонажу выгодно удерживать врага рядом с собой, а не вести долгую погоню."
- ],
- "Invoker":[
-  "Перед действием персонажу приходится выбирать подходящий инструмент из большого набора, а не полагаться на одну постоянную комбинацию.",
-  "Один и тот же персонаж способен закрывать очень разные задачи, но нужный вариант часто приходится подготовить заранее."
- ],
- "Meepo":[
-  "Игроку приходится одновременно следить за несколькими позициями и превращать численное присутствие в преимущество.",
-  "Ошибка одной управляемой части может испортить весь эпизод, поэтому особенно важен одновременный контроль нескольких целей и участков карты."
- ]
+ "Kunkka":["Часть набора требует заранее читать движение противника, а не реагировать только после его действия."],
+ "Morphling":["Во время драки персонаж постоянно балансирует между собственной выживаемостью и силой следующего действия."],
+ "Pudge":["Ошибки движения противника особенно ценны для персонажа, если рядом мало безопасного пространства для исправления позиции."],
+ "Invoker":["Перед действием персонажу приходится выбирать подходящий инструмент из необычно большого набора возможностей."],
+ "Meepo":["Игроку приходится одновременно контролировать несколько позиций, и ошибка в одной из них может испортить весь эпизод."],
+ "Necrophos":["Персонаж предпочитает затяжные столкновения, в которых может пережить первый обмен и продолжить давить без отхода."]
 };
 function cleanTags(base,variantIndex){
  const raw=(base.variantTags?.[variantIndex]||base.variantTags?.[0]||[]).filter(t=>!String(t).startsWith("sig:"));
- return [...new Set(raw)].filter(t=>TAG_CLUES[t]);
+ return [...new Set(raw)].filter(t=>TAG_FRAG[t]);
 }
 function textHash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
-function tagLine(tag,base,variantIndex,slot){const bank=TAG_CLUES[tag]||TAG_CLUES.position;return bank[textHash(`${base.hero}|${variantIndex}|${slot}|${tag}`)%bank.length]}
-function identityOpeners(base,variantIndex){
- if(CUSTOM_OPENERS[base.hero])return CUSTOM_OPENERS[base.hero];
+function singleOpener(base,variantIndex){
+ const custom=CUSTOM_OPENERS[base.hero];
+ if(custom?.length)return custom[variantIndex%custom.length];
  const tags=cleanTags(base,variantIndex);
- const a=tags[variantIndex%Math.max(1,tags.length)]||"position";
- let b=tags[(variantIndex+1)%Math.max(1,tags.length)]||"timing";
- if(b===a&&tags.length>1)b=tags[(variantIndex+2)%tags.length];
- let c=tags[(variantIndex+2)%Math.max(1,tags.length)]||b;
- let d=tags[(variantIndex+3)%Math.max(1,tags.length)]||a;
- if(c===d&&tags.length>1)d=tags[(variantIndex+4)%tags.length];
- const h=textHash(`${base.hero}|${variantIndex}`);
- const t1=PAIR_TEMPLATES[h%PAIR_TEMPLATES.length],t2=PAIR_TEMPLATES[(h+3)%PAIR_TEMPLATES.length];
- return [t1(TAG_FRAG[a]||TAG_FRAG.position,TAG_FRAG[b]||TAG_FRAG.timing),t2(TAG_FRAG[c]||TAG_FRAG.position,TAG_FRAG[d]||TAG_FRAG.timing)];
+ const tag=tags[(textHash(`${base.hero}|${variantIndex}|tag`))%Math.max(1,tags.length)]||"position";
+ const frag=TAG_FRAG[tag]||TAG_FRAG.position;
+ const ti=textHash(`${base.hero}|${variantIndex}|template`)%OPENER_TEMPLATES.length;
+ return OPENER_TEMPLATES[ti](frag);
 }
 function buildClueChain(base,variantIndex=0){
  const facts=(CLUE_FACTS[base.hero]||[]).slice(0,3);
- const [first,second]=identityOpeners(base,variantIndex);
- if(facts.length<3)return [first,second,...facts].slice(0,5);
- const sig=Math.max(0,Math.min(2,SIGNATURE_FACT[base.hero]??2));
- const middle=[0,1,2].filter(i=>i!==sig);
- if(variantIndex%2)middle.reverse();
- return [first,second,facts[middle[0]],facts[middle[1]],facts[sig]];
+ if(!facts.length)return [singleOpener(base,variantIndex)];
+ const sig=Math.max(0,Math.min(facts.length-1,SIGNATURE_FACT[base.hero]??(facts.length-1)));
+ const earlier=facts.map((_,i)=>i).filter(i=>i!==sig);
+ if(variantIndex%2)earlier.reverse();
+ // Качество важнее количества: одна вводная связь + три разные механики героя.
+ // Никаких двух общих «стилевых» подсказок подряд.
+ return [singleOpener(base,variantIndex),...earlier.map(i=>facts[i]),facts[sig]].slice(0,4);
 }
 const ATTR={strength:"Сила",agility:"Ловкость",intelligence:"Интеллект",universal:"Универсальный"};
 let round=null,revealed=1,finished=false,lastHero="",attemptsAtStage=0;
@@ -521,7 +507,7 @@ async function copyFriendCode(){
 
 
 function seededRandom(seed){let a=(Number(seed)>>>0)||1;return()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296}}
-function buildChallengePlan(seed,count=5){const rnd=seededRandom(seed),used=new Set(),plan=[];while(plan.length<count){const heroIndex=Math.floor(rnd()*ROUNDS.length);if(used.has(heroIndex))continue;used.add(heroIndex);const r=ROUNDS[heroIndex];const variantIndex=Math.floor(rnd()*(r.variants?.length||1));plan.push({heroIndex,variantIndex})}return plan}
+function buildChallengePlan(seed,count=5){const rnd=seededRandom(seed),used=new Set(),plan=[];while(plan.length<count){const heroIndex=Math.floor(rnd()*ROUNDS.length);if(used.has(heroIndex))continue;used.add(heroIndex);const r=ROUNDS[heroIndex];const variantIndex=Math.floor(rnd()*Math.min(4,(r.variants?.length||1)));plan.push({heroIndex,variantIndex})}return plan}
 function challengeError(e){const m=(e?.message||'').toLowerCase();if(m.includes('rate_limited'))return 'Новый вызов можно создать через несколько секунд.';if(m.includes('mfa_required'))return 'Сначала заверши подтверждение 2FA.';if(m.includes('friendship_not_found'))return 'Этот пользователь больше не находится в списке друзей.';if(m.includes('already_finished'))return 'Эта дуэль уже завершена.';return 'Не удалось выполнить действие с дуэлью. Попробуй ещё раз.'}
 async function createChallenge(friendshipId,friendName){if(!currentUser)return showPage('profile');try{setFriendsMsg(`Создаём дуэль с ${friendName}…`);const {data,error}=await sb.rpc('create_friend_challenge',{p_friendship_id:friendshipId});if(error)throw error;const c=Array.isArray(data)?data[0]:data;if(!c)throw new Error('challenge_create_failed');setFriendsMsg(`Вызов для ${friendName} создан. Можно играть прямо сейчас.`,'good');await loadChallenges();await openChallenge(c.challenge_id)}catch(e){setFriendsMsg(challengeError(e),'bad')}}
 async function loadChallenges(){if(!sb||!currentUser||mfaPending)return;try{const {data,error}=await sb.rpc('list_friend_challenges');if(error)throw error;const list=data||[];$('challengeList').innerHTML=list.length?list.map(c=>{let status='';let cls='';if(c.my_finished&&c.friend_finished){status='Оба закончили';cls='challengeDone'}else if(c.my_finished){status='Ждём друга';cls='challengePending'}else if(c.role==='opponent'){status='Тебе бросили вызов';cls='challengePending'}else{status='Вызов создан';cls='challengePending'}const score=c.my_finished?(c.friend_finished?`${c.my_score} : ${c.friend_score}`:`${c.my_score} очков`):'5 героев';const action=!c.my_finished?`<button class="mini challengeBtn" data-play-challenge="${c.challenge_id}">Играть</button>`:`<button class="mini" data-view-challenge="${c.challenge_id}">Результат</button>`;return `<div class="friendRow ${cls}"><div class="friendInitial">⚔</div><div class="friendInfo"><b>${escapeHtml(c.friend_nickname)}</b><span class="challengeStatus">${status}</span><span class="challengeScore">${score}</span></div><div class="challengeActions">${action}<button class="mini" data-copy-challenge="${c.challenge_id}">Ссылка</button></div></div>`}).join(''):'<div class="friendEmpty">Пока нет дуэлей. Нажми «Бросить вызов» напротив друга.</div>'}catch(e){setFriendsMsg(challengeError(e),'bad')}}
@@ -531,7 +517,7 @@ function queueChallengeProgress(){if(!challengeMode||!activeChallenge?.challenge
 async function flushChallengeProgress(){if(!challengeMode||!activeChallenge?.challenge_id||!sb)return;clearTimeout(challengeSaveTimer);try{await sb.rpc('save_friend_challenge_progress',{p_challenge_id:activeChallenge.challenge_id,p_progress:challengeProgressPayload()})}catch(e){console.warn('challenge progress save failed',e)}}
 async function openChallenge(id){if(!currentUser){pendingChallengeId=id;showPage('profile');setProfileMsg('Войди в аккаунт, чтобы открыть дуэль.');return}try{const c=await getChallenge(id);if(!c)throw new Error('challenge_not_found');if(c.my_finished){showChallengeResult(c);return}activeChallenge=c;challengeMode=true;try{localStorage.setItem(DUEL_KEY,String(c.challenge_id))}catch{}challengePlan=buildChallengePlan(c.seed,c.round_count||5);const p=(c.my_progress&&typeof c.my_progress==='object')?c.my_progress:{};challengeIndex=Math.min(challengePlan.length-1,Math.max(0,Number(p.round_index)||0));challengeScore=Math.max(0,Number(p.total_score)||0);startChallengeRound(p)}catch(e){setFriendsMsg(challengeError(e),'bad');showPage('friends')}}
 function renderResumedRound(){if(!finished)return;$('nextClue').disabled=true;$('nextClue').textContent='Раунд завершён';const heroData=HEROES.find(h=>h.name===round.hero);$('feedback').textContent=challengeSkipped?`Раунд был пропущен · ответ: ${heroData?.ru||round.hero}`:`Раунд уже засчитан. Можно продолжить дуэль.`;$('feedback').className=challengeSkipped?'feedback bad':'feedback good';$('newRound').textContent=challengeIndex+1<challengePlan.length?'Следующий герой':'Завершить дуэль'}
-function startChallengeRound(resume=null){const item=challengePlan[challengeIndex],base=ROUNDS[item.heroIndex];round={...base,clues:buildClueChain(base,item.variantIndex)};revealed=Math.min(5,Math.max(1,Number(resume?.revealed)||1));finished=!!resume?.round_finished;attemptsAtStage=Math.max(0,Number(resume?.attempts)||0);challengeRoundScored=!!resume?.round_scored;challengeSkipped=!!resume?.skipped;const ap=document.getElementById('answerPanel');if(ap)ap.remove();document.querySelector('.gameGrid')?.classList.remove('hasAnswer');$('guess').value='';$('feedback').textContent='';$('feedback').className='feedback';$('challengeHud').classList.remove('hiddenAuth');$('challengeOpponent').textContent=`Дуэль · ${activeChallenge.friend_nickname}`;$('challengeProgress').textContent=`Раунд ${challengeIndex+1}/${challengePlan.length}`;$('challengeTotalScore').textContent=String(challengeScore);$('gameModeLabel').textContent='ДУЭЛЬ С ДРУГОМ';$('gameModeMeta').textContent='прогресс сохраняется автоматически';$('newRound').textContent='Пропустить героя';renderClues();showPage('game');renderResumedRound();updateAttempts();if(!resume||Object.keys(resume).length===0)queueChallengeProgress();if(!finished)$('guess').focus()}
+function startChallengeRound(resume=null){const item=challengePlan[challengeIndex],base=ROUNDS[item.heroIndex];round={...base,clues:buildClueChain(base,item.variantIndex)};revealed=Math.min(round.clues.length,Math.max(1,Number(resume?.revealed)||1));finished=!!resume?.round_finished;attemptsAtStage=Math.max(0,Number(resume?.attempts)||0);challengeRoundScored=!!resume?.round_scored;challengeSkipped=!!resume?.skipped;const ap=document.getElementById('answerPanel');if(ap)ap.remove();document.querySelector('.gameGrid')?.classList.remove('hasAnswer');$('guess').value='';$('feedback').textContent='';$('feedback').className='feedback';$('challengeHud').classList.remove('hiddenAuth');$('challengeOpponent').textContent=`Дуэль · ${activeChallenge.friend_nickname}`;$('challengeProgress').textContent=`Раунд ${challengeIndex+1}/${challengePlan.length}`;$('challengeTotalScore').textContent=String(challengeScore);$('gameModeLabel').textContent='ДУЭЛЬ С ДРУГОМ';$('gameModeMeta').textContent='прогресс сохраняется автоматически';$('newRound').textContent='Пропустить героя';renderClues();showPage('game');renderResumedRound();updateAttempts();if(!resume||Object.keys(resume).length===0)queueChallengeProgress();if(!finished)$('guess').focus()}
 function addChallengeRoundScore(){if(!challengeMode||challengeRoundScored)return;challengeScore+=Number($('score').textContent)||0;challengeRoundScored=true;challengeSkipped=false;$('challengeTotalScore').textContent=String(challengeScore);$('newRound').textContent=challengeIndex+1<challengePlan.length?'Следующий герой':'Завершить дуэль';queueChallengeProgress()}
 async function advanceChallenge(skip=false){if(!challengeMode)return newRound();if(!finished&&!skip)return;if(finished)addChallengeRoundScore();if(challengeIndex+1<challengePlan.length){await flushChallengeProgress();challengeIndex++;revealed=1;attemptsAtStage=0;finished=false;challengeRoundScored=false;challengeSkipped=false;startChallengeRound();return}await finishChallenge()}
 async function skipChallengeRound(){if(!challengeMode)return newRound();if(finished)return advanceChallenge(false);finished=true;challengeRoundScored=true;challengeSkipped=true;$('feedback').textContent=`Раунд пропущен · 0 очков · ответ: ${HEROES.find(h=>h.name===round.hero)?.ru||round.hero}`;$('feedback').className='feedback bad';$('newRound').textContent=challengeIndex+1<challengePlan.length?'Следующий герой':'Завершить дуэль';$('nextClue').disabled=true;updateAttempts();queueChallengeProgress()}
@@ -551,7 +537,7 @@ function saveSoloState(){
  try{sessionStorage.setItem(SOLO_KEY,JSON.stringify({hero:round.hero,clues:round.clues,revealed,attemptsAtStage}))}catch{}
 }
 function restoreSoloState(){
- try{const p=JSON.parse(sessionStorage.getItem(SOLO_KEY)||"null");if(!p?.hero||!Array.isArray(p.clues))return false;const base=ROUNDS.find(r=>r.hero===p.hero);if(!base)return false;round={...base,clues:p.clues};revealed=Math.min(5,Math.max(1,Number(p.revealed)||1));attemptsAtStage=Math.max(0,Number(p.attemptsAtStage)||0);finished=false;lastHero=round.hero;$("guess").value="";$("feedback").textContent="";$("feedback").className="feedback";renderClues();showPage("game");updateAttempts();return true}catch{return false}
+ try{const p=JSON.parse(sessionStorage.getItem(SOLO_KEY)||"null");if(!p?.hero||!Array.isArray(p.clues))return false;const base=ROUNDS.find(r=>r.hero===p.hero);if(!base)return false;round={...base,clues:p.clues};revealed=Math.min(round.clues.length,Math.max(1,Number(p.revealed)||1));attemptsAtStage=Math.max(0,Number(p.attemptsAtStage)||0);finished=false;lastHero=round.hero;$("guess").value="";$("feedback").textContent="";$("feedback").className="feedback";renderClues();showPage("game");updateAttempts();return true}catch{return false}
 }
 async function restoreNavigation(){
  let page="home";try{page=sessionStorage.getItem(NAV_KEY)||"home"}catch{}
@@ -577,7 +563,7 @@ document.querySelectorAll(".hideAfterAnswer").forEach(el=>el.classList.remove("h
   if(round.variants?.length){
     window.__semanticHistory=window.__semanticHistory||{};
     const history=window.__semanticHistory[round.hero]||[];
-    const candidates=round.variants.map((_,i)=>i);
+    const candidates=round.variants.map((_,i)=>i).filter(i=>i<4);
     for(let i=candidates.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[candidates[i],candidates[j]]=[candidates[j],candidates[i]]}
     candidates.sort((a,b)=>{
       const ta=round.variantTags?.[a]||[],tb=round.variantTags?.[b]||[];
