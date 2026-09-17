@@ -97,7 +97,7 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:rad
 
 <section id="profile" class="library hidden"><div class="eyebrow">Игрок Dota Hero Hunt</div><h2>Профиль</h2><div class="sub">Почта используется только для входа. Профиль и аватар закрыты политиками доступа: другой аккаунт не может прочитать или изменить их.</div><div class="profileShell"><div class="profileCard"><div class="profileHero"><div id="profileAvatarFallback" class="profileAvatarFallback">?</div><img id="profileAvatar" class="profileAvatar hiddenAuth" alt="Аватар игрока"><div><div class="profileName" id="profileName">Гость</div><div class="profileEmail" id="profileEmail">Профиль не подключён</div></div></div><div class="profileStatus" id="profileStatus">Можно играть без аккаунта. Для синхронизации между устройствами создай профиль.</div><div class="securityStrip"><b>Защита аккаунта</b><span id="securityState">Проверяется…</span></div><button class="btn friendsShortcut hiddenAuth" id="openFriendsBtn" data-page="friends">Открыть друзей</button></div><div class="authCard">
 
-<div id="loggedOutBox"><div class="authTabs"><button id="loginTab" class="on">Войти</button><button id="registerTab">Создать аккаунт</button></div><div class="formGrid"><div class="field hiddenAuth" id="nicknameField"><label>Ник</label><input id="authNickname" maxlength="24" autocomplete="nickname" placeholder="Например, AegisHunter"></div><div class="field"><label>Почта</label><input id="authEmail" type="email" autocomplete="email" inputmode="email" maxlength="254" placeholder="you@example.com"></div><div class="field"><label>Пароль</label><input id="authPassword" type="password" autocomplete="current-password" minlength="12" maxlength="128" placeholder="Не меньше 12 символов"></div></div><div class="profileActions"><button class="btn primary" id="authSubmit">Войти</button></div><div class="authNote">Для нового аккаунта требуется пароль от 12 символов. Используй отдельный пароль, которого нет на других сайтах. При регистрации адрес почты нужно подтвердить.</div></div>
+<div id="loggedOutBox"><div class="authTabs"><button id="loginTab" class="on">Войти</button><button id="registerTab">Создать аккаунт</button></div><div class="formGrid"><div class="field"><label id="authLoginLabel">Логин или почта</label><input id="authLogin" type="text" autocomplete="username" maxlength="254" spellcheck="false" placeholder="Например, h1dekich"></div><div class="field"><label>Пароль</label><input id="authPassword" type="password" autocomplete="current-password" minlength="12" maxlength="128" placeholder="Не меньше 12 символов"></div></div><div class="profileActions"><button class="btn primary" id="authSubmit">Войти</button></div><div class="authNote" id="authNote">Новые бета-аккаунты работают по логину и паролю — подтверждение почты не требуется. Используй отдельный пароль, которого нет на других сайтах.</div></div>
 
 <div id="mfaLoginBox" class="hiddenAuth"><div class="eyebrow">Двухэтапная защита</div><h3>Подтверди вход</h3><p class="authNote">На аккаунте включена 2FA. Введи 6-значный код из приложения-аутентификатора.</p><div class="field"><label>Код 2FA</label><input id="mfaLoginCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000"></div><div class="profileActions"><button class="btn primary" id="mfaLoginSubmit">Подтвердить</button><button class="btn" id="mfaCancel">Отмена</button></div></div>
 
@@ -185,8 +185,9 @@ async function refreshSecurityState(){
 async function renderPlayer(){
  const nick=currentProfile?.nickname||currentUser?.email?.split("@")[0]||"Гость";
  $("chipName").textContent=nick;$("gamePlayer").textContent=nick;$("profileName").textContent=nick;
- $("profileEmail").textContent=currentUser?.email||"Профиль не подключён";
- $("profileStatus").textContent=currentUser?"Данные профиля доступны только этому аккаунту. Почта не хранится в таблице профилей.":"Можно играть без аккаунта. Для синхронизации между устройствами создай профиль.";
+ const isBetaAccount=!!currentUser?.user_metadata?.beta_username_auth;
+ $("profileEmail").textContent=currentUser?(isBetaAccount?"Бета-аккаунт · вход по логину":currentUser.email||"Аккаунт подключён"):"Профиль не подключён";
+ $("profileStatus").textContent=currentUser?(isBetaAccount?"Бета-аккаунт синхронизирует профиль, друзей и дуэли между устройствами.":"Данные профиля доступны только этому аккаунту. Почта не хранится в таблице профилей."):"Можно играть без аккаунта. Для синхронизации между устройствами создай профиль.";
  $("chipAvatar").textContent=initialLetter(nick);$("profileAvatarFallback").textContent=initialLetter(nick);
  $("loggedOutBox").classList.toggle("hiddenAuth",!!currentUser||mfaPending);
  $("mfaLoginBox").classList.toggle("hiddenAuth",!mfaPending);
@@ -229,25 +230,53 @@ async function syncSession(){
   mfaPending=false;currentProfile=await loadOwnProfile(currentUser);await renderPlayer();if(pendingChallengeId){const id=pendingChallengeId;pendingChallengeId=null;setTimeout(()=>openChallenge(id),0)}
  }catch{currentUser=null;currentProfile=null;mfaPending=false;await renderPlayer()}
 }
-function setAuthMode(mode){authMode=mode;const reg=mode==="register";$("loginTab").classList.toggle("on",!reg);$("registerTab").classList.toggle("on",reg);$("nicknameField").classList.toggle("hiddenAuth",!reg);$("authSubmit").textContent=reg?"Создать аккаунт":"Войти";$("authPassword").autocomplete=reg?"new-password":"current-password";$("authPassword").placeholder=reg?"Не меньше 12 символов":"Пароль";setProfileMsg("")}
+function validBetaLogin(v){return /^[a-z0-9_.-]{2,24}$/.test(v)}
+function setAuthMode(mode){
+ authMode=mode;const reg=mode==="register";
+ $("loginTab").classList.toggle("on",!reg);$("registerTab").classList.toggle("on",reg);
+ $("authSubmit").textContent=reg?"Создать аккаунт":"Войти";
+ $("authLoginLabel").textContent=reg?"Логин":"Логин или почта";
+ $("authLogin").placeholder=reg?"2–24 символа: a-z, 0-9, _ . -":"Например, h1dekich";
+ $("authLogin").autocomplete="username";
+ $("authPassword").autocomplete=reg?"new-password":"current-password";
+ $("authPassword").placeholder=reg?"Не меньше 12 символов":"Пароль";
+ $("authNote").textContent=reg?"Бета-аккаунт создаётся без почты: нужен только логин и пароль от 12 символов. Сохрани пароль — восстановление пароля по почте в этой бете недоступно.":"Войди по логину бета-аккаунта. Старые подтверждённые аккаунты также могут войти по почте.";
+ setProfileMsg("");
+}
+async function betaAuth(action,login,password){
+ const {data,error}=await sb.functions.invoke("beta-auth",{body:{action,login,password}});
+ if(error){
+  let msg=data?.message||"";
+  try{if(!msg&&error?.context){const body=await error.context.json();msg=body?.message||""}}catch{}
+  const e=new Error(msg||"Система аккаунтов временно недоступна.");e.beta=true;throw e;
+ }
+ if(!data?.access_token||!data?.refresh_token){const e=new Error(data?.message||"Не удалось начать сессию.");e.beta=true;throw e}
+ const {data:sessionData,error:sessionErr}=await sb.auth.setSession({access_token:data.access_token,refresh_token:data.refresh_token});
+ if(sessionErr||!sessionData?.user)throw sessionErr||new Error("Session failed");
+ return sessionData.user;
+}
 async function submitAuth(){
  if(!sb)return setProfileMsg("Система аккаунтов недоступна.","bad");
- const email=$("authEmail").value.trim().toLowerCase(),password=$("authPassword").value,nick=$("authNickname").value.trim();
- if(!validEmail(email)||!strongPassword(password))return setProfileMsg("Укажи корректную почту и пароль длиной не меньше 12 символов.","bad");
- if(authMode==="register"&&!validNick(nick))return setProfileMsg("Ник должен быть от 2 до 24 символов без управляющих знаков.","bad");
+ const identifier=$("authLogin").value.trim().toLowerCase(),password=$("authPassword").value;
+ if(!strongPassword(password))return setProfileMsg("Пароль должен быть длиной не меньше 12 символов.","bad");
+ if(authMode==="register"&&!validBetaLogin(identifier))return setProfileMsg("Логин: 2–24 символа. Можно использовать a-z, цифры, _, . и -.","bad");
+ if(authMode==="login"&&!validBetaLogin(identifier)&&!validEmail(identifier))return setProfileMsg("Укажи логин бета-аккаунта или корректную почту старого аккаунта.","bad");
  if(authMode==="login"){const wait=loginThrottle();if(wait)return setProfileMsg(`Слишком много попыток в этой форме. Подожди ${wait} сек.`,"bad")}
- $("authSubmit").disabled=true;setProfileMsg("Проверяем данные…");
+ $("authSubmit").disabled=true;setProfileMsg(authMode==="register"?"Создаём бета-аккаунт…":"Входим…");
  try{
+  let user;
   if(authMode==="register"){
-    const {data,error}=await sb.auth.signUp({email,password,options:{data:{nickname:nick}}});if(error)throw error;
+    user=await betaAuth("signup",identifier,password);
     $("authPassword").value="";
-    if(data.session&&data.user){await completeSignedInUser(data.user);setProfileMsg("Аккаунт создан.","good")}
-    else setProfileMsg("Если регистрация принята, на почту придёт письмо подтверждения. После подтверждения войди в аккаунт.","good");
-  }else{
-    const {data,error}=await sb.auth.signInWithPassword({email,password});if(error){recordFailedLogin();throw error}
+    await completeSignedInUser(user);setProfileMsg("Аккаунт создан. Ты уже вошёл.","good");
+  }else if(validEmail(identifier)){
+    const {data,error}=await sb.auth.signInWithPassword({email:identifier,password});if(error){recordFailedLogin();throw error}
     failedLoginTimes=[];$("authPassword").value="";await completeSignedInUser(data.user);
+  }else{
+    try{user=await betaAuth("login",identifier,password)}catch(e){recordFailedLogin();throw e}
+    failedLoginTimes=[];$("authPassword").value="";await completeSignedInUser(user);
   }
- }catch(e){setProfileMsg(safeAuthMessage(e,authMode),"bad")}finally{$("authSubmit").disabled=false}
+ }catch(e){setProfileMsg(e?.beta?e.message:safeAuthMessage(e,authMode),"bad")}finally{$("authSubmit").disabled=false}
 }
 async function verifyMfaLogin(){
  const code=cleanCode($("mfaLoginCode").value);if(code.length!==6)return setProfileMsg("Введи 6-значный код 2FA.","bad");
