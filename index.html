@@ -632,9 +632,18 @@ function dailyUnlocked(level){return dailyLevelStamp(level)<=dayStamp()}
 function readLocalDaily(){try{return JSON.parse(localStorage.getItem(DAILY_LOCAL_KEY)||"{}")||{}}catch{return {}}}
 function writeLocalDaily(v){try{localStorage.setItem(DAILY_LOCAL_KEY,JSON.stringify(v))}catch{}}
 function markDailyComplete(day,hero,score){const v=readLocalDaily();v[day]={hero,score,completed_at:new Date().toISOString()};writeLocalDaily(v);dailyProgress.set(day,v[day])}
+function validDailyCompletion(day,item){
+ if(!day||!item?.hero)return false;
+ const expected=dailyHeroFor(String(day));
+ return !!expected&&norm(item.hero)===norm(expected.hero);
+}
 async function loadDailyProgress(){
- dailyProgress=new Map(Object.entries(readLocalDaily()));
- if(sb&&currentUser&&!mfaPending){try{const {data,error}=await sb.rpc("get_my_daily_hunt_calendar");if(error)throw error;(data||[]).forEach(x=>dailyProgress.set(String(x.day),x))}catch{}}
+ const local=readLocalDaily();
+ dailyProgress=new Map();
+ let localChanged=false;
+ Object.entries(local).forEach(([day,item])=>{if(validDailyCompletion(day,item))dailyProgress.set(day,item);else{delete local[day];localChanged=true;}});
+ if(localChanged)writeLocalDaily(local);
+ if(sb&&currentUser&&!mfaPending){try{const {data,error}=await sb.rpc("get_my_daily_hunt_calendar");if(error)throw error;(data||[]).forEach(x=>{const day=String(x.day);if(validDailyCompletion(day,x))dailyProgress.set(day,x)})}catch{}}
  renderDailyHunt();
 }
 function nextDailyUnlockMs(){const p=moscowParts(),today=`${p.year}-${p.month}-${p.day}`,after6=Number(p.hour)>=6,next=after6?dateAdd(today,1):today,[y,m,d]=next.split("-").map(Number);return Date.UTC(y,m-1,d,3,0,0)}
@@ -977,11 +986,20 @@ function showPage(page){
   if(page==="friends"&&currentUser&&!mfaPending){loadFriends();loadChallenges();}if(page==="collection"){loadCollection();}if(page==="daily"){loadDailyProgress();updateDailyCountdown();}
 }
 function saveSoloState(){
- if(challengeMode||!round||finished)return;
- try{sessionStorage.setItem(SOLO_KEY,JSON.stringify({hero:round.hero,clues:round.clues,revealed,attemptsAtStage,daily:dailyMode,day:dailyMode?dailySelectedDay:null,clueSet:dailyMode?"daily-v1":"normal-v1"}))}catch{}
+ if(challengeMode||!round)return;
+ try{
+  if(dailyMode&&dailySelectedDay){sessionStorage.setItem(SOLO_KEY,JSON.stringify({version:2,daily:true,day:dailySelectedDay}));return;}
+  if(finished)return;
+  sessionStorage.setItem(SOLO_KEY,JSON.stringify({hero:round.hero,clues:round.clues,revealed,attemptsAtStage,daily:false,day:null,clueSet:"normal-v1"}));
+ }catch{}
 }
 function restoreSoloState(){
- try{const p=JSON.parse(sessionStorage.getItem(SOLO_KEY)||"null");if(!p?.hero||!Array.isArray(p.clues)||p.clues.length!==3){try{sessionStorage.removeItem(SOLO_KEY)}catch{}return false;}const base=ROUNDS.find(r=>r.hero===p.hero);if(!base)return false;dailyMode=!!p.daily&&!!p.day&&p.day<=dayStamp();dailySelectedDay=dailyMode?p.day:null;round={...base,clues:dailyMode?buildDailyClueChain(base):buildClueChain(base)};revealed=Math.min(round.clues.length,Math.max(1,Number(p.revealed)||1));attemptsAtStage=Math.max(0,Number(p.attemptsAtStage)||0);finished=false;lastHero=round.hero;$("guess").value="";$("feedback").textContent="";$("feedback").className="feedback";if(dailyMode){$("gameModeLabel").textContent="ОХОТА ДНЯ";$("gameModeMeta").textContent="отдельные подсказки Охоты дня · прогресс восстановлен";$("newRound").textContent="На главную"}renderClues();showPage("game");updateAttempts();return true}catch{return false}
+ try{
+  const p=JSON.parse(sessionStorage.getItem(SOLO_KEY)||"null");
+  if(p?.daily&&p?.day&&p.day<=dayStamp()){const start=new Date(DAILY_SEASON_START+"T00:00:00Z"),d=new Date(p.day+"T00:00:00Z"),level=Math.floor((d-start)/86400000)+1;if(level>=1&&level<=DAILY_LEVEL_COUNT){startDailyLevel(level);return true;}}
+  if(!p?.hero||!Array.isArray(p.clues)||p.clues.length!==3){try{sessionStorage.removeItem(SOLO_KEY)}catch{}return false;}
+  const base=ROUNDS.find(r=>r.hero===p.hero);if(!base)return false;dailyMode=false;dailySelectedDay=null;round={...base,clues:buildClueChain(base)};revealed=Math.min(round.clues.length,Math.max(1,Number(p.revealed)||1));attemptsAtStage=Math.max(0,Number(p.attemptsAtStage)||0);finished=false;lastHero=round.hero;$("guess").value="";$("feedback").textContent="";$("feedback").className="feedback";renderClues();showPage("game");updateAttempts();return true
+ }catch{return false}
 }
 async function restoreNavigation(){
  let page="home";try{page=sessionStorage.getItem(NAV_KEY)||"home"}catch{}
@@ -992,9 +1010,9 @@ async function restoreNavigation(){
 function maxAttempts(){return revealed<=3?2:1}
 function updateAttempts(){
  const left=Math.max(0,maxAttempts()-attemptsAtStage);
- const locked=!finished&&left===0;
- $("guess").disabled=locked;$("guessBtn").disabled=locked;
- $("guess").placeholder=locked?"Открой ещё одну связь":`Введите имя героя · попыток: ${left}`;
+ const locked=!finished&&left===0,disabled=finished||locked;
+ $("guess").disabled=disabled;$("guessBtn").disabled=disabled;
+ $("guess").placeholder=finished?(dailyMode?"Попытки обновятся при новом входе в этот день":"Раунд завершён"):(locked?"Открой ещё одну связь":`Введите имя героя · попыток: ${left}`);
  let el=$("attemptInfo");
  if(!el){el=document.createElement("div");el.id="attemptInfo";el.className="attemptInfo";$("feedback").before(el);}
  el.textContent=finished?"":locked?"Попытки закончились — открой ещё одну связь.":`Попыток на этой связи: ${left}/${maxAttempts()}`;
@@ -1042,6 +1060,14 @@ function revealHeroAnswer(success){
 function finishFailedRound(){
  finished=true;challengeFailed=!!challengeMode;
  $("guess").value="";
+ if(dailyMode){
+  $("feedback").textContent="✕ Попытки закончились. Герой остаётся в секрете. Вернись к уровням и зайди в этот день снова — попытки обновятся.";
+  $("feedback").className="feedback bad";
+  $("levelBadge").textContent="Герой остаётся в секрете";
+  $("nextClue").textContent="Попытки закончились";$("nextClue").disabled=true;
+  $("newRound").textContent="К уровням";
+  saveSoloState();updateAttempts();return;
+ }
  $("feedback").textContent="✕ Попытки закончились · 0 очков. Правильный ответ показан справа.";
  $("feedback").className="feedback bad";
  revealHeroAnswer(false);
