@@ -43,6 +43,8 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:rad
 .answerArtGlow{position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(54,218,106,.18),transparent 58%),linear-gradient(180deg,transparent 65%,#07110ddd)}
 .answerMeta{position:absolute;left:18px;right:18px;bottom:18px;z-index:3;padding:15px;text-align:center;border:1px solid #2a3d35;border-radius:12px;background:#07100de8;backdrop-filter:blur(8px)}
 .answerMeta strong{display:block;font-size:22px}.answerMeta small{display:block;color:#87948d;margin-top:3px}
+ .answerPanel.failedAnswer{border-color:#5a3030;background:linear-gradient(180deg,#13090a,#0a1012)}
+.answerPanel.failedAnswer .answerHead{color:#e67d7d;text-shadow:0 0 18px #d13b3155}
 @media(max-width:900px){.gameGrid.hasAnswer{grid-template-columns:1fr}.answerPanel{min-height:420px}}
 
 
@@ -105,14 +107,14 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;background:rad
 <header class="top"><div class="brand"><i></i>DOTA HERO HUNT</div><nav class="nav"><button class="active" data-page="home">Игра</button><button data-page="heroes">Герои</button><button data-page="collection">Коллекция</button><button data-page="friends">Друзья</button><button data-page="profile">Профиль</button><button>RU</button></nav><button class="accountChip" id="accountChip" data-page="profile"><span class="avatarFallback" id="chipAvatar">?</span><span id="chipName">Гость</span></button></header>
 
 <main id="home">
-<section class="homeHero"><div><div class="eyebrow">DOTA HERO HUNT · FINAL BETA</div><h1>УЗНАЙ ГЕРОЯ.<br><span>РАНЬШЕ ПОДСКАЗОК.</span></h1><div class="lead">Директор раунда заранее знает героя и выдаёт четыре разные зацепки: от широкого игрового профиля к характерной механике. Повторов одной мысли внутри цепочки нет.</div><div class="actions"><button class="btn primary" id="startBtn">Начать охоту</button><button class="btn" id="dailyBtn">Охота дня</button><button class="btn" data-page="friends">Дуэль с другом</button></div><div class="directorMark">127 героев · 4 подсказки · ответ можно дать в любой момент</div></div><div class="visual"><div class="ring"></div><div class="q">?</div></div></section>
+<section class="homeHero"><div><div class="eyebrow">DOTA HERO HUNT · FINAL BETA</div><h1>УЗНАЙ ГЕРОЯ.<br><span>РАНЬШЕ ПОДСКАЗОК.</span></h1><div class="lead">Каждый раунд даёт три разные игровые зацепки о конкретном герое. Первая уже содержит полезную механику, а следующие две постепенно делают ответ точнее — без повторения одной и той же мысли.</div><div class="actions"><button class="btn primary" id="startBtn">Начать охоту</button><button class="btn" id="dailyBtn">Охота дня</button><button class="btn" data-page="friends">Дуэль с другом</button></div><div class="directorMark">127 героев · 3 содержательные подсказки · ответ можно дать в любой момент</div></div><div class="visual"><div class="ring"></div><div class="q">?</div></div></section>
 <section class="homeQuick"><div><div class="eyebrow">Обычный раунд</div><b>Играй без ожидания</b><span>Случайный герой, очки уменьшаются с каждой открытой связью.</span></div><div class="dailyCard"><div class="dailyBadge">РАЗ В ДЕНЬ</div><b>Охота дня</b><span>Один и тот же герой дня для всех игроков. Хороший повод возвращаться.</span><button class="mini" id="dailyCardBtn">Играть сегодня</button></div><div><div class="eyebrow">Друзья</div><b>5 одинаковых героев</b><span>Прогресс дуэли сохраняется: можно закрыть сайт и продолжить позже.</span></div></section>
 </main>
 
 <section id="game" class="game hidden">
-<div class="gameTop"><div><div class="eyebrow" id="gameModeLabel">FINAL BETA</div><h2 style="margin:5px 0 0">Кто этот герой?</h2></div><div class="gameMeta"><span id="gamePlayer">Гость</span> · <span id="gameModeMeta">127 героев · 4 калиброванные подсказки</span></div></div><div id="challengeHud" class="challengeHud hiddenAuth"><div><b id="challengeOpponent">Дуэль</b><span id="challengeProgress">Раунд 1/5</span></div><div><b id="challengeTotalScore">0</b><span>очков в дуэли</span></div></div>
+<div class="gameTop"><div><div class="eyebrow" id="gameModeLabel">FINAL BETA</div><h2 style="margin:5px 0 0">Кто этот герой?</h2></div><div class="gameMeta"><span id="gamePlayer">Гость</span> · <span id="gameModeMeta">127 героев · 3 содержательные подсказки</span></div></div><div id="challengeHud" class="challengeHud hiddenAuth"><div><b id="challengeOpponent">Дуэль</b><span id="challengeProgress">Раунд 1/5</span></div><div><b id="challengeTotalScore">0</b><span>очков в дуэли</span></div></div>
 <div class="gameGrid"><aside class="mysteryPanel"><div class="score">Очки<br><b id="score">1000</b></div><div class="letter" id="letter">?</div><div class="letterLabel">буква раунда</div></aside>
-<section class="cluePanel"><div class="clueHeader"><h2>Цепочка связей</h2><div class="levelBadge" id="levelBadge">Подсказка 1/4</div></div><div class="clues" id="clues"></div>
+<section class="cluePanel"><div class="clueHeader"><h2>Цепочка связей</h2><div class="levelBadge" id="levelBadge">Подсказка 1/3</div></div><div class="clues" id="clues"></div>
 <div class="guessBox"><div class="guessRow"><input id="guess" autocomplete="off" placeholder="Напиши имя героя…"><button class="btn primary" id="guessBtn">Ответить</button></div><div id="feedback" class="feedback"></div><div class="gameActions"><button class="mini" id="nextClue">Ещё одна связь</button><button class="mini" id="newRound">Новый раунд</button><button class="mini" id="backHome">На главную</button></div></div></section></div>
 </section>
 
@@ -513,17 +515,20 @@ function directorOpening(base){
 }
 function clueOverlap(a,b){const A=new Set(clueTokens(a)),B=new Set(clueTokens(b));if(!A.size||!B.size)return 0;let n=0;A.forEach(x=>B.has(x)&&n++);return n/Math.min(A.size,B.size)}
 function buildClueChain(base){
- const raw=(CLUE_FACTS[base.hero]||[]).slice();
- const facts=raw.map((text,i)=>({text,i,s:clueSpecificity(text)})).sort((a,b)=>a.s-b.s);
- const out=[directorOpening(base)];
- // Director uses each authored fact once. Similar facts are separated and never paraphrased into a second clue.
- for(const f of facts){if(out.every(x=>clueOverlap(x,f.text)<.72))out.push(f.text)}
- for(const f of facts){if(out.length>=4)break;if(!out.includes(f.text))out.push(f.text)}
- return out.slice(0,4);
+ // Quality-first chain: only hero-specific authored facts.
+ // The old generic semantic opener was removed because it repeated across heroes
+ // (for example “control + ordinary attacks”) and often gave no useful information.
+ const raw=(CLUE_FACTS[base.hero]||[]).filter(Boolean);
+ const out=[];
+ for(const text of raw){
+   if(out.every(prev=>clueOverlap(prev,text)<.72))out.push(text);
+ }
+ for(const text of raw){if(out.length>=3)break;if(!out.includes(text))out.push(text)}
+ return out.slice(0,3);
 }
 const ATTR={strength:"Сила",agility:"Ловкость",intelligence:"Интеллект",universal:"Универсальный"};
 let round=null,revealed=1,finished=false,lastHero="",attemptsAtStage=0;
-let challengeMode=false,activeChallenge=null,challengePlan=[],challengeIndex=0,challengeScore=0,challengeRoundScored=false,pendingChallengeId=null,challengeSkipped=false,challengeSaveTimer=null;
+let challengeMode=false,activeChallenge=null,challengePlan=[],challengeIndex=0,challengeScore=0,challengeRoundScored=false,pendingChallengeId=null,challengeSkipped=false,challengeFailed=false,challengeSaveTimer=null;
 const NAV_KEY="dhh:lastPage",SOLO_KEY="dhh:soloRound",DUEL_KEY="dhh:activeChallenge",DAILY_KEY="dhh:daily";
 let dailyMode=false,achievementStats=null,collectionData=[],collectionStatus="all",collectionAttr="all";
 const $=id=>document.getElementById(id);
@@ -877,16 +882,16 @@ function challengeError(e){const m=(e?.message||'').toLowerCase();if(m.includes(
 async function createChallenge(friendshipId,friendName){if(!currentUser)return showPage('profile');try{setFriendsMsg(`Создаём дуэль с ${friendName}…`);const {data,error}=await sb.rpc('create_friend_challenge',{p_friendship_id:friendshipId});if(error)throw error;const c=Array.isArray(data)?data[0]:data;if(!c)throw new Error('challenge_create_failed');setFriendsMsg(`Вызов для ${friendName} создан. Можно играть прямо сейчас.`,'good');await loadChallenges();await openChallenge(c.challenge_id)}catch(e){setFriendsMsg(challengeError(e),'bad')}}
 async function loadChallenges(){if(!sb||!currentUser||mfaPending)return;try{const {data,error}=await sb.rpc('list_friend_challenges');if(error)throw error;const list=data||[];$('challengeList').innerHTML=list.length?list.map(c=>{let status='';let cls='';if(c.my_finished&&c.friend_finished){status='Оба закончили';cls='challengeDone'}else if(c.my_finished){status='Ждём друга';cls='challengePending'}else if(c.role==='opponent'){status='Тебе бросили вызов';cls='challengePending'}else{status='Вызов создан';cls='challengePending'}const score=c.my_finished?(c.friend_finished?`${c.my_score} : ${c.friend_score}`:`${c.my_score} очков`):'5 героев';const action=!c.my_finished?`<button class="mini challengeBtn" data-play-challenge="${c.challenge_id}">Играть</button>`:`<button class="mini" data-view-challenge="${c.challenge_id}">Результат</button>`;return `<div class="friendRow ${cls}"><div class="friendInitial">⚔</div><div class="friendInfo"><b>${escapeHtml(c.friend_nickname)}</b><span class="challengeStatus">${status}</span><span class="challengeScore">${score}</span></div><div class="challengeActions">${action}<button class="mini" data-copy-challenge="${c.challenge_id}">Ссылка</button></div></div>`}).join(''):'<div class="friendEmpty">Пока нет дуэлей. Нажми «Бросить вызов» напротив друга.</div>'}catch(e){setFriendsMsg(challengeError(e),'bad')}}
 async function getChallenge(id){const {data,error}=await sb.rpc('get_friend_challenge',{p_challenge_id:id});if(error)throw error;return Array.isArray(data)?data[0]:data}
-function challengeProgressPayload(){return {version:2,round_index:challengeIndex,total_score:challengeScore,revealed,attempts:attemptsAtStage,round_finished:!!finished,round_scored:!!challengeRoundScored,skipped:!!challengeSkipped}}
+function challengeProgressPayload(){return {version:3,round_index:challengeIndex,total_score:challengeScore,revealed,attempts:attemptsAtStage,round_finished:!!finished,round_scored:!!challengeRoundScored,skipped:!!challengeSkipped,failed:!!challengeFailed}}
 function queueChallengeProgress(){if(!challengeMode||!activeChallenge?.challenge_id||!sb)return;clearTimeout(challengeSaveTimer);challengeSaveTimer=setTimeout(async()=>{try{await sb.rpc('save_friend_challenge_progress',{p_challenge_id:activeChallenge.challenge_id,p_progress:challengeProgressPayload()})}catch(e){console.warn('challenge progress save failed',e)}},120)}
 async function flushChallengeProgress(){if(!challengeMode||!activeChallenge?.challenge_id||!sb)return;clearTimeout(challengeSaveTimer);try{await sb.rpc('save_friend_challenge_progress',{p_challenge_id:activeChallenge.challenge_id,p_progress:challengeProgressPayload()})}catch(e){console.warn('challenge progress save failed',e)}}
 async function openChallenge(id){if(!currentUser){pendingChallengeId=id;showPage('profile');setProfileMsg('Войди в аккаунт, чтобы открыть дуэль.');return}try{const c=await getChallenge(id);if(!c)throw new Error('challenge_not_found');if(c.my_finished){showChallengeResult(c);return}activeChallenge=c;challengeMode=true;try{localStorage.setItem(DUEL_KEY,String(c.challenge_id))}catch{}challengePlan=buildChallengePlan(c.seed,c.round_count||5);const p=(c.my_progress&&typeof c.my_progress==='object')?c.my_progress:{};challengeIndex=Math.min(challengePlan.length-1,Math.max(0,Number(p.round_index)||0));challengeScore=Math.max(0,Number(p.total_score)||0);startChallengeRound(p)}catch(e){setFriendsMsg(challengeError(e),'bad');showPage('friends')}}
-function renderResumedRound(){if(!finished)return;$('nextClue').disabled=true;$('nextClue').textContent='Раунд завершён';const heroData=HEROES.find(h=>h.name===round.hero);$('feedback').textContent=challengeSkipped?`Раунд был пропущен · ответ: ${heroData?.ru||round.hero}`:`Раунд уже засчитан. Можно продолжить дуэль.`;$('feedback').className=challengeSkipped?'feedback bad':'feedback good';$('newRound').textContent=challengeIndex+1<challengePlan.length?'Следующий герой':'Завершить дуэль'}
-function startChallengeRound(resume=null){const item=challengePlan[challengeIndex],base=ROUNDS[item.heroIndex];round={...base,clues:buildClueChain(base)};revealed=Math.min(round.clues.length,Math.max(1,Number(resume?.revealed)||1));finished=!!resume?.round_finished;attemptsAtStage=Math.max(0,Number(resume?.attempts)||0);challengeRoundScored=!!resume?.round_scored;challengeSkipped=!!resume?.skipped;const ap=document.getElementById('answerPanel');if(ap)ap.remove();document.querySelector('.gameGrid')?.classList.remove('hasAnswer');$('guess').value='';$('feedback').textContent='';$('feedback').className='feedback';$('challengeHud').classList.remove('hiddenAuth');$('challengeOpponent').textContent=`Дуэль · ${activeChallenge.friend_nickname}`;$('challengeProgress').textContent=`Раунд ${challengeIndex+1}/${challengePlan.length}`;$('challengeTotalScore').textContent=String(challengeScore);$('gameModeLabel').textContent='ДУЭЛЬ С ДРУГОМ';$('gameModeMeta').textContent='прогресс сохраняется автоматически';$('newRound').textContent='Пропустить героя';renderClues();showPage('game');renderResumedRound();updateAttempts();if(!resume||Object.keys(resume).length===0)queueChallengeProgress();if(!finished)$('guess').focus()}
+function renderResumedRound(){if(!finished)return;$('nextClue').disabled=true;$('nextClue').textContent='Раунд завершён';const heroData=HEROES.find(h=>h.name===round.hero);if(challengeFailed){revealHeroAnswer(false);$('feedback').textContent='Попытки были исчерпаны · 0 очков.';$('feedback').className='feedback bad'}else{$('feedback').textContent=challengeSkipped?`Раунд был пропущен · ответ: ${heroData?.ru||round.hero}`:`Раунд уже засчитан. Можно продолжить дуэль.`;$('feedback').className=challengeSkipped?'feedback bad':'feedback good'}$('newRound').textContent=challengeIndex+1<challengePlan.length?'Следующий герой':'Завершить дуэль'}
+function startChallengeRound(resume=null){const item=challengePlan[challengeIndex],base=ROUNDS[item.heroIndex];round={...base,clues:buildClueChain(base)};revealed=Math.min(round.clues.length,Math.max(1,Number(resume?.revealed)||1));finished=!!resume?.round_finished;attemptsAtStage=Math.max(0,Number(resume?.attempts)||0);challengeRoundScored=!!resume?.round_scored;challengeSkipped=!!resume?.skipped;challengeFailed=!!resume?.failed;const ap=document.getElementById('answerPanel');if(ap)ap.remove();document.querySelector('.gameGrid')?.classList.remove('hasAnswer');$('guess').value='';$('feedback').textContent='';$('feedback').className='feedback';$('challengeHud').classList.remove('hiddenAuth');$('challengeOpponent').textContent=`Дуэль · ${activeChallenge.friend_nickname}`;$('challengeProgress').textContent=`Раунд ${challengeIndex+1}/${challengePlan.length}`;$('challengeTotalScore').textContent=String(challengeScore);$('gameModeLabel').textContent='ДУЭЛЬ С ДРУГОМ';$('gameModeMeta').textContent='прогресс сохраняется автоматически';$('newRound').textContent='Пропустить героя';renderClues();showPage('game');renderResumedRound();updateAttempts();if(!resume||Object.keys(resume).length===0)queueChallengeProgress();if(!finished)$('guess').focus()}
 function addChallengeRoundScore(){if(!challengeMode||challengeRoundScored)return;challengeScore+=Number($('score').textContent)||0;challengeRoundScored=true;challengeSkipped=false;$('challengeTotalScore').textContent=String(challengeScore);$('newRound').textContent=challengeIndex+1<challengePlan.length?'Следующий герой':'Завершить дуэль';queueChallengeProgress()}
-async function advanceChallenge(skip=false){if(!challengeMode)return newRound();if(!finished&&!skip)return;if(finished)addChallengeRoundScore();if(challengeIndex+1<challengePlan.length){await flushChallengeProgress();challengeIndex++;revealed=1;attemptsAtStage=0;finished=false;challengeRoundScored=false;challengeSkipped=false;startChallengeRound();return}await finishChallenge()}
-async function skipChallengeRound(){if(!challengeMode)return newRound();if(finished)return advanceChallenge(false);finished=true;challengeRoundScored=true;challengeSkipped=true;$('feedback').textContent=`Раунд пропущен · 0 очков · ответ: ${HEROES.find(h=>h.name===round.hero)?.ru||round.hero}`;$('feedback').className='feedback bad';$('newRound').textContent=challengeIndex+1<challengePlan.length?'Следующий герой':'Завершить дуэль';$('nextClue').disabled=true;updateAttempts();queueChallengeProgress()}
-async function finishChallenge(){try{$('newRound').disabled=true;await flushChallengeProgress();const {error}=await sb.rpc('submit_friend_challenge',{p_challenge_id:activeChallenge.challenge_id,p_score:challengeScore});if(error)throw error;const c=await getChallenge(activeChallenge.challenge_id);challengeMode=false;activeChallenge=null;challengePlan=[];$('challengeHud').classList.add('hiddenAuth');$('gameModeLabel').textContent='FINAL BETA';$('gameModeMeta').textContent='127 героев · 4 разные подсказки';$('newRound').disabled=false;$('newRound').textContent='Новый раунд';showChallengeResult(c)}catch(e){$('newRound').disabled=false;$('feedback').textContent=challengeError(e);$('feedback').className='feedback bad'}}
+async function advanceChallenge(skip=false){if(!challengeMode)return newRound();if(!finished&&!skip)return;if(finished)addChallengeRoundScore();if(challengeIndex+1<challengePlan.length){await flushChallengeProgress();challengeIndex++;revealed=1;attemptsAtStage=0;finished=false;challengeRoundScored=false;challengeSkipped=false;challengeFailed=false;startChallengeRound();return}await finishChallenge()}
+async function skipChallengeRound(){if(!challengeMode)return newRound();if(finished)return advanceChallenge(false);finished=true;challengeRoundScored=true;challengeSkipped=true;challengeFailed=false;$('feedback').textContent=`Раунд пропущен · 0 очков · ответ: ${HEROES.find(h=>h.name===round.hero)?.ru||round.hero}`;$('feedback').className='feedback bad';$('newRound').textContent=challengeIndex+1<challengePlan.length?'Следующий герой':'Завершить дуэль';$('nextClue').disabled=true;updateAttempts();queueChallengeProgress()}
+async function finishChallenge(){try{$('newRound').disabled=true;await flushChallengeProgress();const {error}=await sb.rpc('submit_friend_challenge',{p_challenge_id:activeChallenge.challenge_id,p_score:challengeScore});if(error)throw error;const c=await getChallenge(activeChallenge.challenge_id);challengeMode=false;activeChallenge=null;challengePlan=[];$('challengeHud').classList.add('hiddenAuth');$('gameModeLabel').textContent='FINAL BETA';$('gameModeMeta').textContent='127 героев · 3 содержательные подсказки';$('newRound').disabled=false;$('newRound').textContent='Новый раунд';showChallengeResult(c)}catch(e){$('newRound').disabled=false;$('feedback').textContent=challengeError(e);$('feedback').className='feedback bad'}}
 function showChallengeResult(c){challengeMode=false;activeChallenge=null;try{localStorage.removeItem(DUEL_KEY)}catch{}showPage('friends');loadChallenges();const both=c.my_finished&&c.friend_finished;let text=both?`Твой результат: ${c.my_score}. Результат ${escapeHtml(c.friend_nickname)}: ${c.friend_score}.`:`Твой результат: ${c.my_score}. ${escapeHtml(c.friend_nickname)} ещё не закончил дуэль.`;setFriendsMsg(text,'good')}
 async function copyChallengeLink(id){if(location.protocol==='file:'){setFriendsMsg('В локальной бете вызов уже появится у друга во вкладке «Друзья». Публичная ссылка будет нужна после публикации сайта.','good');return}const url=new URL(location.href);url.search='';url.hash='';url.searchParams.set('challenge',id);try{await navigator.clipboard.writeText(url.toString());setFriendsMsg('Ссылка на дуэль скопирована. Отправь её другу.','good')}catch{setFriendsMsg('Не удалось скопировать автоматически. Друг всё равно увидит вызов во вкладке «Друзья».','bad')}}
 function detectChallengeLink(){try{const id=new URL(location.href).searchParams.get('challenge');if(id&&/^[0-9a-f-]{36}$/i.test(id))pendingChallengeId=id}catch{}}
@@ -902,7 +907,7 @@ function saveSoloState(){
  try{sessionStorage.setItem(SOLO_KEY,JSON.stringify({hero:round.hero,clues:round.clues,revealed,attemptsAtStage,daily:dailyMode,day:dailyMode?dayStamp():null}))}catch{}
 }
 function restoreSoloState(){
- try{const p=JSON.parse(sessionStorage.getItem(SOLO_KEY)||"null");if(!p?.hero||!Array.isArray(p.clues))return false;const base=ROUNDS.find(r=>r.hero===p.hero);if(!base)return false;dailyMode=!!p.daily&&p.day===dayStamp();round={...base,clues:p.clues};revealed=Math.min(round.clues.length,Math.max(1,Number(p.revealed)||1));attemptsAtStage=Math.max(0,Number(p.attemptsAtStage)||0);finished=false;lastHero=round.hero;$("guess").value="";$("feedback").textContent="";$("feedback").className="feedback";if(dailyMode){$("gameModeLabel").textContent="ОХОТА ДНЯ";$("gameModeMeta").textContent="один герой на сегодня · прогресс восстановлен";$("newRound").textContent="На главную"}renderClues();showPage("game");updateAttempts();return true}catch{return false}
+ try{const p=JSON.parse(sessionStorage.getItem(SOLO_KEY)||"null");if(!p?.hero||!Array.isArray(p.clues)||p.clues.length!==3){try{sessionStorage.removeItem(SOLO_KEY)}catch{}return false;}const base=ROUNDS.find(r=>r.hero===p.hero);if(!base)return false;dailyMode=!!p.daily&&p.day===dayStamp();round={...base,clues:p.clues};revealed=Math.min(round.clues.length,Math.max(1,Number(p.revealed)||1));attemptsAtStage=Math.max(0,Number(p.attemptsAtStage)||0);finished=false;lastHero=round.hero;$("guess").value="";$("feedback").textContent="";$("feedback").className="feedback";if(dailyMode){$("gameModeLabel").textContent="ОХОТА ДНЯ";$("gameModeMeta").textContent="один герой на сегодня · прогресс восстановлен";$("newRound").textContent="На главную"}renderClues();showPage("game");updateAttempts();return true}catch{return false}
 }
 async function restoreNavigation(){
  let page="home";try{page=sessionStorage.getItem(NAV_KEY)||"home"}catch{}
@@ -920,7 +925,7 @@ function updateAttempts(){
  if(!el){el=document.createElement("div");el.id="attemptInfo";el.className="attemptInfo";$("feedback").before(el);}
  el.textContent=finished?"":locked?"Попытки закончились — открой ещё одну связь.":`Попыток на этой связи: ${left}/${maxAttempts()}`;
 }
-function newRound(){if(challengeMode)return skipChallengeRound();if(round&&!finished&&!dailyMode)recordAchievementMiss();challengeMode=false;dailyMode=false;$('challengeHud')?.classList.add('hiddenAuth');$('gameModeLabel').textContent='FINAL BETA';$('gameModeMeta').textContent='127 героев · 4 калиброванные подсказки';$('newRound').textContent='Новый раунд';const ap=document.getElementById("answerPanel");if(ap)ap.remove();
+function newRound(){if(challengeMode)return skipChallengeRound();if(round&&!finished&&!dailyMode)recordAchievementMiss();challengeMode=false;dailyMode=false;$('challengeHud')?.classList.add('hiddenAuth');$('gameModeLabel').textContent='FINAL BETA';$('gameModeMeta').textContent='127 героев · 3 содержательные подсказки';$('newRound').textContent='Новый раунд';const ap=document.getElementById("answerPanel");if(ap)ap.remove();
 document.querySelector(".gameGrid")?.classList.remove("hasAnswer");
 document.querySelectorAll(".hideAfterAnswer").forEach(el=>el.classList.remove("hideAfterAnswer"));
   const pool=ROUNDS.filter(r=>r.hero!==lastHero);
@@ -930,7 +935,7 @@ document.querySelectorAll(".hideAfterAnswer").forEach(el=>el.classList.remove("h
   renderClues();showPage("game");updateAttempts();saveSoloState();$("guess").focus();
 }
 function renderClues(){
-  const score=[1000,850,650,400][Math.min(revealed-1,3)]||400;
+  const score=[1000,700,400][Math.min(revealed-1,2)]||400;
   $("score").textContent=score;
   $("levelBadge").textContent=`Подсказка ${revealed}/${round.clues.length} · ${score} очков`;
   $("clues").innerHTML=round.clues.slice(0,revealed).map((c,i)=>`<div class="clue">${i===0?'<strong>'+c+'</strong>':c}</div>`).join("");
@@ -946,31 +951,47 @@ function nextClue(){
    $("feedback").className="feedback";
  }
 }
+function revealHeroAnswer(success){
+ const heroData=HEROES.find(h=>h.name===round.hero);
+ let reveal=document.getElementById("answerPanel");
+ if(!reveal){reveal=document.createElement("aside");reveal.id="answerPanel";reveal.className="answerPanel";document.querySelector(".gameGrid").appendChild(reveal);}
+ reveal.classList.toggle("failedAnswer",!success);
+ reveal.innerHTML=`<div class="answerHead">${success?'Правильно!':'Правильный ответ'}</div><div class="answerWho">Это <b>${heroData?.ru||round.hero}</b></div>
+ <div class="answerArt"><img src="${heroData?.portrait||''}" alt="${heroData?.ru||round.hero}" onerror="if(heroData?.portraitFallback)this.src=heroData.portraitFallback"><div class="answerArtGlow"></div></div>
+ <div class="answerMeta"><strong>${heroData?.ru||round.hero}</strong><small>${round.hero}</small></div>`;
+ reveal.classList.add("show");document.querySelector(".gameGrid").classList.add("hasAnswer");
+ document.querySelector(".letterPanel")?.classList.add("hideAfterAnswer");
+ document.querySelector(".letterStage")?.classList.add("hideAfterAnswer");
+ $("levelBadge").textContent=success?"Герой раскрыт":"Ответ раскрыт";
+ $("nextClue").textContent="Раунд завершён";$("nextClue").disabled=true;
+}
+function finishFailedRound(){
+ finished=true;challengeFailed=!!challengeMode;
+ $("guess").value="";
+ $("feedback").textContent="✕ Попытки закончились · 0 очков. Правильный ответ показан справа.";
+ $("feedback").className="feedback bad";
+ revealHeroAnswer(false);
+ if(challengeMode){challengeRoundScored=true;challengeSkipped=false;$("newRound").textContent=challengeIndex+1<challengePlan.length?'Следующий герой':'Завершить дуэль';queueChallengeProgress();}
+ else{try{sessionStorage.removeItem(SOLO_KEY)}catch{}recordAchievementMiss();}
+ updateAttempts();
+}
 function guess(){
  if(finished)return;const g=norm($("guess").value);if(!g)return;
  const heroData=HEROES.find(h=>h.name===round.hero);const accepted=(heroData?.aliases||[round.hero]).map(norm);if(accepted.includes(g)){
    finished=true;
    $("feedback").textContent=`✓ Верно · ${$("score").textContent} очков`;
    $("feedback").className="feedback good";
-   let reveal=document.getElementById("answerPanel");
-   if(!reveal){reveal=document.createElement("aside");reveal.id="answerPanel";reveal.className="answerPanel";document.querySelector(".gameGrid").appendChild(reveal);}
-   reveal.innerHTML=`<div class="answerHead">Правильно!</div><div class="answerWho">Это <b>${heroData?.ru||round.hero}</b></div>
-   <div class="answerArt"><img src="${heroData?.portrait||''}" alt="${heroData?.ru||round.hero}" onerror="if(heroData?.portraitFallback)this.src=heroData.portraitFallback"><div class="answerArtGlow"></div></div>
-   <div class="answerMeta"><strong>${heroData?.ru||round.hero}</strong><small>${round.hero}</small></div>`;
-   reveal.classList.add("show");document.querySelector(".gameGrid").classList.add("hasAnswer");
-   document.querySelector(".letterPanel")?.classList.add("hideAfterAnswer");
-   document.querySelector(".letterStage")?.classList.add("hideAfterAnswer");
-   $("levelBadge").textContent="Герой раскрыт";
-   $("nextClue").textContent="Раунд завершён";
-   $("nextClue").disabled=true;if(challengeMode){addChallengeRoundScore();queueChallengeProgress()}else{try{sessionStorage.removeItem(SOLO_KEY)}catch{}recordAchievementResult()}updateAttempts();
+   challengeFailed=false;revealHeroAnswer(true);if(challengeMode){addChallengeRoundScore();queueChallengeProgress()}else{try{sessionStorage.removeItem(SOLO_KEY)}catch{}recordAchievementResult()}updateAttempts();
 }
  else{
    attemptsAtStage++;
    const left=Math.max(0,maxAttempts()-attemptsAtStage);
+   $("guess").value="";
+   if(left===0&&revealed>=round.clues.length){finishFailedRound();return;}
    $("feedback").textContent=left>0?`✕ Не тот герой. Осталось попыток: ${left}.`:"✕ Попытки на этой связи закончились. Открой ещё одну связь.";
    $("feedback").className="feedback bad";
    updateAttempts();if(challengeMode)queueChallengeProgress();else saveSoloState();
-   if(left>0)$("guess").select();
+   if(left>0)$("guess").focus();
  }
 }
 
