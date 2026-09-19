@@ -1,0 +1,63 @@
+/* Special modes pack — lore / neural vision / voice */
+.homeModes{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.homeModeCard{min-height:128px}
+.homeModeCard.lore{border-color:#59442f;background:radial-gradient(circle at 0 50%,rgba(156,103,52,.16),transparent 42%),linear-gradient(145deg,rgba(25,20,16,.92),rgba(9,15,20,.88))}
+.homeModeCard.lore .modeIcon{background:#332314;color:#e5ad67}.homeModeCard.lore .modeArrow{color:#d89d5b}
+.homeModeCard.aiMode{border-color:#31505f;background:radial-gradient(circle at 0 50%,rgba(54,157,186,.14),transparent 42%),linear-gradient(145deg,rgba(9,26,34,.92),rgba(7,14,20,.88))}
+.homeModeCard.aiMode .modeIcon{background:#102b35;color:#72d7ef}.homeModeCard.aiMode .modeArrow{color:#59bfd8}
+.homeModeCard.voice{border-color:#4d3859;background:radial-gradient(circle at 0 50%,rgba(139,73,170,.14),transparent 42%),linear-gradient(145deg,rgba(25,15,30,.92),rgba(8,14,20,.88))}
+.homeModeCard.voice .modeIcon{background:#29162f;color:#dc86f2}.homeModeCard.voice .modeArrow{color:#c675db}
+.homeModeCard.daily{grid-column:auto}
+.modePill{display:inline-flex;margin-top:8px;border:1px solid #34414b;border-radius:999px;padding:4px 7px;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:#7f8d99;background:#081018}
+.lore .modePill{border-color:#5e4329;color:#d9a667;background:#1d140c}.aiMode .modePill{border-color:#285365;color:#75cee1;background:#0a1c24}.voice .modePill{border-color:#563760;color:#cf8be0;background:#1c0e21}
+
+#game.specialMode{position:relative}
+#game.specialMode:before{content:"";position:absolute;inset:0 -40px;pointer-events:none;opacity:.58;filter:blur(1px);z-index:-1}
+#game.specialLore:before{background:radial-gradient(circle at 18% 20%,rgba(159,104,46,.15),transparent 35%)}
+#game.specialAI:before{background:radial-gradient(circle at 18% 20%,rgba(42,173,206,.14),transparent 35%)}
+#game.specialVoice:before{background:radial-gradient(circle at 18% 20%,rgba(159,69,190,.14),transparent 35%)}
+#game.specialLore .mysteryPanel{border-color:#4c3b29;background:linear-gradient(155deg,#18130e,#0b1014)}
+#game.specialAI .mysteryPanel{border-color:#284c58;background:linear-gradient(155deg,#091a21,#081015)}
+#game.specialVoice .mysteryPanel{border-color:#493253;background:linear-gradient(155deg,#190f1d,#0a1014)}
+#game.specialLore .letter{color:#e4b16d;text-shadow:0 10px 40px #c884353d}
+#game.specialAI .letter{font-size:82px;color:#79d9ef;text-shadow:0 10px 42px #35b8d84f;letter-spacing:-.06em}
+#game.specialVoice .letter{color:#dd90ef;text-shadow:0 10px 42px #b24ed24d}
+#game.specialLore .clue:before{background:#d29a55;box-shadow:0 0 12px #d29a5566}
+#game.specialAI .clue:before{background:#55c8df;box-shadow:0 0 12px #55c8df66}
+#game.specialVoice .clue:before{background:#c16bdd;box-shadow:0 0 12px #c16bdd66}
+#game.specialLore .clues:before{background:linear-gradient(#9a6937,#29323b)}
+#game.specialAI .clues:before{background:linear-gradient(#33798a,#29323b)}
+#game.specialVoice .clues:before{background:linear-gradient(#764487,#29323b)}
+.specialClue{position:relative;overflow:hidden}
+.specialClue .clueTier{display:block;margin-bottom:7px;font-size:9px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#7c8893}
+.specialClue .clueText{display:block;line-height:1.58;color:#e1e5e8}
+.specialClue:first-child .clueText{font-weight:760;color:#fff}
+.specialClue.loadingClue{min-height:70px;display:flex;align-items:center;gap:10px;color:#73808b}
+.specialClue.loadingClue:after{content:"";width:15px;height:15px;border:2px solid #37434c;border-top-color:#b84a4a;border-radius:50%;animation:modeSpin .8s linear infinite}
+@keyframes modeSpin{to{transform:rotate(360deg)}}
+.modeSource{margin-top:10px;border-top:1px solid #1f2931;padding-top:10px;color:#596671;font-size:10px;line-height:1.45}
+.modeSource b{color:#8d9aa4}
+.modeError{color:#d67878!important}
+.modeScan{position:absolute;inset:0;pointer-events:none;opacity:.11;background:repeating-linear-gradient(180deg,transparent 0 4px,rgba(255,255,255,.24) 5px 6px);mix-blend-mode:screen}
+.specialAI .mysteryPanel:after{content:"";position:absolute;left:12%;right:12%;height:1px;top:20%;background:#77d8ee;box-shadow:0 0 18px #77d8ee;opacity:.4;animation:scanMove 3.2s ease-in-out infinite}
+@keyframes scanMove{0%,100%{top:22%;opacity:.15}50%{top:76%;opacity:.55}}
+.specialVoice .mysteryPanel:after{content:"";position:absolute;left:15%;right:15%;top:48%;height:70px;transform:translateY(-50%);opacity:.23;background:linear-gradient(90deg,transparent 0 3%,#d17be6 3% 4%,transparent 4% 8%,#d17be6 8% 10%,transparent 10% 18%,#d17be6 18% 19%,transparent 19% 24%,#d17be6 24% 29%,transparent 29% 34%,#d17be6 34% 36%,transparent 36% 43%,#d17be6 43% 49%,transparent 49% 55%,#d17be6 55% 57%,transparent 57% 64%,#d17be6 64% 70%,transparent 70% 76%,#d17be6 76% 79%,transparent 79% 88%,#d17be6 88% 90%,transparent 90%)}
+
+@media(max-width:980px){.homeModes{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:720px){.homeModes{grid-template-columns:1fr!important}.homeModeCard{min-height:108px}.homeModeCard.daily{grid-column:auto}}
+
+/* Special-mode responsive hardening */
+#game.specialMode .gameGrid,#game.specialMode .cluePanel,#game.specialMode .clues,#game.specialMode .guessBox{min-width:0}
+#game.specialMode .guessRow input{min-width:0}
+#game.specialMode .clueHeader{flex-wrap:wrap}
+#game.specialMode .levelBadge{max-width:100%;white-space:normal;text-align:center}
+@media(max-width:520px){
+  #game.specialMode .gameTop{align-items:flex-start;flex-direction:column}
+  #game.specialMode .cluePanel{padding:18px}
+  #game.specialMode .clueHeader h2{font-size:22px}
+  #game.specialMode .guessRow{grid-template-columns:1fr}
+  #game.specialMode .guessRow .btn{width:100%}
+  #game.specialMode .gameActions{display:grid;grid-template-columns:1fr}
+  #game.specialMode .gameActions .mini{width:100%;text-align:center}
+}
+#game.specialMode{overflow:clip}
