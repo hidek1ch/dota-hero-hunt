@@ -1,4 +1,4 @@
-<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://cdn.cloudflare.steamstatic.com https://cdn.akamai.steamstatic.com https://ibbxoxxhtyuoljnhneab.supabase.co; connect-src 'self' https://ibbxoxxhtyuoljnhneab.supabase.co wss://ibbxoxxhtyuoljnhneab.supabase.co https://challenges.cloudflare.com https://www.dota2.com https://raw.githubusercontent.com; media-src 'self' blob: https://dotabase.dillerm.io https://php.dotabase.dillerm.io https://cdn.cloudflare.steamstatic.com https://cdn.akamai.steamstatic.com; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src https://challenges.cloudflare.com; worker-src 'none'; upgrade-insecure-requests"><title>Dota Hero Hunt — Special Modes Build</title>
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://cdn.cloudflare.steamstatic.com https://cdn.akamai.steamstatic.com https://ibbxoxxhtyuoljnhneab.supabase.co; connect-src 'self' https://ibbxoxxhtyuoljnhneab.supabase.co wss://ibbxoxxhtyuoljnhneab.supabase.co https://challenges.cloudflare.com https://www.dota2.com https://raw.githubusercontent.com; media-src 'self' blob: https://hydra-media.cursecdn.com https://static.wikia.nocookie.net https://dotabase.dillerm.io https://php.dotabase.dillerm.io https://cdn.cloudflare.steamstatic.com https://cdn.akamai.steamstatic.com; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src https://challenges.cloudflare.com; worker-src 'none'; upgrade-insecure-requests"><title>Dota Hero Hunt — Special Modes Build</title>
 <style>
 *{box-sizing:border-box}:root{--bg:#080b10;--panel:#0e1319;--line:#252d36;--muted:#8b96a1;--red:#c54444;--red2:#7a2525}
 body{margin:0;min-height:100vh;background:var(--bg);color:#f4f6f8;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
@@ -197,7 +197,7 @@ url('assets/home-background-cinematic.png') center top/cover no-repeat!important
 </style><style id="cleanBgV7">
 #home.homeV5{background-position:center top!important;background-size:cover!important;background-repeat:no-repeat!important}
 @media(max-width:720px){#home.homeV5{background-size:cover!important;background-position:center top!important}}
-</style><link rel="stylesheet" href="assets/modes-v15.css?v=15"></head><body><div class="wrap">
+</style><link rel="stylesheet" href="assets/modes-v16.css?v=16"></head><body><div class="wrap">
 <header class="top"><div class="brand"><i></i>DOTA HERO HUNT</div><nav class="nav"><button class="active" data-page="home">Главная</button><button data-page="collection">Коллекция</button><button data-page="friends">Друзья</button><button data-page="profile">Профиль</button></nav><button class="accountChip" id="accountChip" data-page="profile"><span class="avatarFallback" id="chipAvatar">?</span><span id="chipName">Гость</span></button></header>
 
 <main id="home" class="homeV5">
@@ -725,11 +725,8 @@ function dailyMetaCandidates(base){
  return HEROES.filter(h=>{const x=DAILY_META[h.name];return x&&h.attribute===hd.attribute&&x[0]===m[0]});
 }
 function dailyRewriteFact(text,variant=0){
- // Keep the authored fact grammatically intact; Daily adds its own framing instead of a repeated role list.
  let t=String(text||'').trim().replace(/[.]+$/,'');
- if(!t)return "Подсказка временно недоступна.";
- if(variant%3===1)return `Следующая связь уже конкретнее: ${t}.`;
- return `Самая точная связь: ${t}.`;
+ return t?`${t}.`:'Подсказка временно недоступна.';
 }
 function dailyFactOrder(base){
  const facts=(CLUE_FACTS[base.hero]||[]).filter(Boolean).slice();
@@ -1319,4 +1316,4 @@ document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>showPage(b.dat
 $("collectionStatusFilters")?.addEventListener("click",e=>{const b=e.target.closest("button[data-collection-status]");if(!b)return;collectionStatus=b.dataset.collectionStatus;document.querySelectorAll("[data-collection-status]").forEach(x=>x.classList.toggle("on",x===b));renderCollection()});
 $("collectionAttrFilters")?.addEventListener("click",e=>{const b=e.target.closest("button[data-collection-attr]");if(!b)return;collectionAttr=b.dataset.collectionAttr;document.querySelectorAll("[data-collection-attr]").forEach(x=>x.classList.toggle("on",x===b));renderCollection()});
 window.addEventListener("beforeunload",()=>{if(challengeMode){flushChallengeProgress()}else saveSoloState()});
-</script><script src="assets/modes-v15.js?v=15"></script></body></html>
+</script><script src="assets/modes-v16.js?v=16"></script></body></html>
