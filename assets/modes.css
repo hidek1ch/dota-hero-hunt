@@ -88,3 +88,65 @@
   .voiceControls{align-items:flex-start}
   .voicePlayBtn{width:100%;min-width:0}
 }
+
+
+/* polish v12 */
+#home .homeStage{padding-top:6px}
+#home .homeCenter{max-width:820px}
+#home .homeLogoTitle{filter:drop-shadow(0 18px 40px rgba(0,0,0,.28))}
+#home .homePitch{max-width:700px;margin-inline:auto;text-shadow:0 2px 10px rgba(0,0,0,.32)}
+#home .homeMainActions .btn{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#home .homeModeCard{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 14px 36px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.03)}
+#home .homeModeCard .modeCopy small{max-width:34ch;display:block}
+#home .homeFacts{box-shadow:0 10px 30px rgba(0,0,0,.18)}
+#game.specialMode .clueHeader h2{font-size:30px;line-height:1.1}
+#game.specialMode .levelBadge{font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+.storyBody{font-size:19px;line-height:1.84}
+.voicePlayer audio{margin-top:6px}
+.voiceHint,.modeSource{display:none!important}
+@media(max-width:720px){#game.specialMode .clueHeader h2{font-size:24px}.storyBody{font-size:17px;line-height:1.75}}
+
+
+/* layout rebuild v13 */
+#game.specialMode .gameGrid{grid-template-columns:1fr!important;gap:18px}
+#game.specialMode .mysteryPanel{display:none!important}
+#game.specialMode .cluePanel{min-height:auto;border-radius:24px;padding:28px;background:linear-gradient(180deg,rgba(10,17,24,.97),rgba(8,13,19,.98));border:1px solid rgba(79,95,108,.32);box-shadow:0 24px 70px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.03)}
+#game.specialMode .clueHeader{display:flex;align-items:flex-start;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid rgba(79,95,108,.18);margin-bottom:18px}
+#game.specialMode .clueHeader h2{font-size:34px;line-height:1.08;margin:0}
+#game.specialMode .levelBadge{padding:12px 16px;border-radius:999px;background:rgba(8,16,24,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+#game.specialMode .clues{padding-left:0}
+#game.specialMode .clues:before,#game.specialMode .clue:before{display:none!important}
+#game.specialMode .specialCard{border-radius:22px;padding:28px 28px 24px;box-shadow:0 18px 50px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.03)}
+#game.specialMode .specialLead{font-size:12px;letter-spacing:.22em;color:#aab4bd;margin-bottom:16px}
+#game.specialMode .storyBody{font-size:20px;line-height:1.88;max-width:980px}
+#game.specialMode .guessBox{margin-top:24px;padding-top:22px}
+#game.specialMode .guessRow{grid-template-columns:minmax(0,1fr) auto;gap:12px}
+#game.specialMode .guessRow input{height:58px;border-radius:16px;font-size:17px;padding:0 18px;background:#07111a;border:1px solid rgba(83,99,113,.42)}
+#game.specialMode #guessBtn{height:58px;padding:0 22px;border-radius:16px;font-size:16px}
+#game.specialMode .gameActions{margin-top:14px}
+#game.specialMode .mini{height:46px;padding:0 16px;border-radius:14px}
+#game.specialMode .feedback{margin-top:12px;font-size:14px}
+#game.specialVoice .specialCard{background:linear-gradient(180deg,#120d17,#0c1017);border-color:#5a3b72}
+#game.specialLore .specialCard{background:linear-gradient(180deg,#14100c,#0c1117);border-color:#5a4128}
+#game.specialAI .specialCard{background:linear-gradient(180deg,#0b161d,#0c1117);border-color:#2c5969}
+#game.specialVoice .voicePlayer{padding:30px}
+#game.specialVoice .voiceControls{margin-bottom:18px}
+#game.specialVoice .voicePlayBtn{min-width:240px;height:58px;border-radius:16px;font-size:17px}
+#game.specialVoice audio{width:100%;height:58px;border-radius:16px;background:#0a1017}
+#game.specialMode .attemptHint{display:none}
+@media(max-width:900px){
+  #game.specialMode .cluePanel{padding:22px;border-radius:20px}
+  #game.specialMode .clueHeader{flex-direction:column;gap:12px}
+  #game.specialMode .clueHeader h2{font-size:28px}
+  #game.specialMode .specialCard{padding:22px 20px 20px}
+  #game.specialMode .storyBody{font-size:18px;line-height:1.78}
+}
+@media(max-width:640px){
+  #game.specialMode .cluePanel{padding:16px;border-radius:18px}
+  #game.specialMode .specialCard{padding:18px}
+  #game.specialMode .clueHeader h2{font-size:24px}
+  #game.specialMode .storyBody{font-size:17px;line-height:1.7}
+  #game.specialMode .guessRow{grid-template-columns:1fr}
+  #game.specialMode .guessRow input,#game.specialMode #guessBtn{height:52px}
+  #game.specialVoice .voicePlayBtn{width:100%;min-width:0}
+}

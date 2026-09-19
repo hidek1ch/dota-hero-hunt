@@ -6,11 +6,11 @@
       className: 'specialLore',
       icon: '✦',
       label: 'ЛОР-АРХИВ',
-      title: 'Кто скрыт в истории?',
-      meta: 'свободный режим · читаешь историю и угадываешь героя',
+      title: 'Угадай героя по его истории',
+      meta: 'официальная история героя · свободный раунд',
       clueTitle: 'История героя',
       mystery: 'архивная запись',
-      badge: 'Свободный режим · одна история за раунд',
+      badge: 'Официальная история героя',
       score: 1000,
       source: 'официальный лор Dota 2'
     },
@@ -18,11 +18,11 @@
       className: 'specialAI',
       icon: '◎',
       label: 'НЕЙРОВЗГЛЯД',
-      title: 'Кого описывает нейровзгляд?',
-      meta: 'свободный режим · один большой образ без портрета',
+      title: 'Угадай героя по нейровзгляду',
+      meta: 'одно большое описание героя · свободный раунд',
       clueTitle: 'Дневник наблюдений',
       mystery: 'образ героя',
-      badge: 'Свободный режим · одна запись за раунд',
+      badge: 'Один большой образ героя',
       score: 1000,
       source: 'локальный генератор образов'
     },
@@ -30,11 +30,11 @@
       className: 'specialVoice',
       icon: '♫',
       label: 'ГОЛОС ГЕРОЯ',
-      title: 'Чей это голос?',
-      meta: 'свободный режим · слушай реплику и угадывай героя',
+      title: 'Угадай героя по голосу',
+      meta: 'реальный голосовой фрагмент · свободный раунд',
       clueTitle: 'Голосовая запись',
       mystery: 'аудиофрагмент',
-      badge: 'Свободный режим · один фрагмент озвучки за раунд',
+      badge: 'Настоящий голосовой фрагмент',
       score: 1000,
       source: 'игровая озвучка Dota 2'
     }
@@ -163,7 +163,7 @@
     $('mysteryLabel').textContent=m.mystery;
     $('newRound').textContent='Новый раунд';
     $('score').textContent=String(m.score);
-    $('nextClue').textContent='Одна запись за раунд';
+    $('nextClue').textContent='Свободный режим';
   }
 
   function spClearAnswer(){
@@ -178,7 +178,7 @@
     box.innerHTML='';
     const c=document.createElement('div');
     c.className='specialCard loadingCard';
-    c.innerHTML=`<div class="specialLead">${mode==='lore'?'Собираю историю героя…':mode==='voice'?'Подбираю голосовой фрагмент…':'Формирую образ героя…'}</div>`;
+    c.innerHTML=`<div class="specialLead">${mode==='lore'?'Загружаю историю героя…':mode==='voice'?'Загружаю голос героя…':'Открываю запись нейровзгляда…'}</div>`;
     box.appendChild(c);
     $('levelBadge').textContent='Подготовка режима';
     $('nextClue').disabled=true;
@@ -187,11 +187,7 @@
   }
 
   function spRenderSource(box, round, mode){
-    const m=SP_MODE_META[mode];
-    const source=document.createElement('div');
-    source.className='modeSource';
-    source.innerHTML=`<span>${escapeHtml(round.sourceLabel||m.source)}</span>${round.sourceNote?`<span> · ${escapeHtml(round.sourceNote)}</span>`:''}`;
-    box.appendChild(source);
+    return;
   }
 
   function spAttachVoiceControls(container, audioUrl){
@@ -212,7 +208,7 @@
         else { audio.pause(); setState(false); }
       }catch{
         const hint=container.querySelector('.voiceHint');
-        if(hint) hint.textContent='Звук не запустился. Попробуй кнопку play на встроенном плеере ниже.';
+        if(hint) hint.textContent='Не удалось воспроизвести фрагмент. Нажми play на плеере ещё раз.';
       }
     };
     audio.onplay=()=>{ spCurrentAudio = audio; setState(true); };
@@ -233,15 +229,14 @@
       const wrap=document.createElement('div');
       wrap.className='voicePlayer specialCard';
       wrap.innerHTML=`
-        <div class="specialLead">Слушай фрагмент и попробуй угадать героя только по голосу.</div>
+        <div class="specialLead">Слушай фрагмент и угадывай героя по голосу.</div>
         <div class="voiceControls">
           <button class="voicePlayBtn" type="button"><span class="voiceBtnIcon">▶</span><span class="voiceBtnText">Слушать голос</span></button>
           <div class="voiceWave" aria-hidden="true">
             <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
           </div>
         </div>
-        <div class="voiceHint">Если хочешь, можно переслушивать фрагмент сколько угодно.</div>
-        <audio controls preload="none" src="${escapeHtml(round.audioUrl||'')}"></audio>
+        <audio controls preload="none" crossorigin="anonymous" src="${escapeHtml(round.audioUrl||'')}"></audio>
       `;
       box.appendChild(wrap);
       spRenderSource(box, round, spMode);
@@ -249,7 +244,7 @@
     } else {
       const card=document.createElement('article');
       card.className=`specialCard storyCard ${spMode==='ai'?'diaryCard':'archiveCard'}`;
-      const lead=spMode==='ai' ? 'Запись из дневника наблюдений' : 'Архивная запись';
+      const lead=spMode==='ai' ? 'Дневник наблюдений' : 'История героя';
       card.innerHTML=`<div class="specialLead">${lead}</div><div class="storyBody">${escapeHtml(round.clues[0]||'').replace(/\n/g,'<br>')}</div>`;
       box.appendChild(card);
       spRenderSource(box, round, spMode);
@@ -371,24 +366,14 @@
     if(spMemory.lore.has(hero.name)) return spMemory.lore.get(hero.name);
     const cache=spGetSession('dhh_lore_single_'+hero.name);
     if(cache?.clues?.length){ spMemory.lore.set(hero.name, cache); return cache; }
-    let built;
-    try{
-      const ids=await spLoadHeroIds(), id=ids[hero.name];
-      if(!id) throw new Error('hero_id_missing');
-      const j=await spFetchJson(`https://www.dota2.com/datafeed/herodata?hero_id=${encodeURIComponent(id)}&language=russian`,7000);
-      const d=j?.result?.data?.heroes?.[0], text=d?.bio_loc||d?.lore_loc||'';
-      if(Number(d?.id)!==Number(id)) throw new Error('lore_hero_id_mismatch');
-      if(d?.name_english_loc && spNormalizeSimple(d.name_english_loc)!==spNormalizeSimple(hero.name)) throw new Error('lore_hero_name_mismatch');
-      if(spWords(text).length<25) throw new Error('lore_empty');
-      built=spBuildLoreFromText(hero, text, 'Valve Dota 2 Data Feed');
-    } catch {
-      const slug=spKBSlug(hero.name);
-      const j=await spFetchJson(`https://raw.githubusercontent.com/eendor/dota2-knowledge-base/main/data/heroes/${encodeURIComponent(slug)}.json`,7000);
-      if(spNormalizeSimple(j?.name)!==spNormalizeSimple(hero.name)) throw new Error('lore_fallback_hero_mismatch');
-      const text=j?.lore||'';
-      if(spWords(text).length<25) throw new Error('lore_fallback_empty');
-      built=spBuildLoreFromText(hero, text, 'Valve-derived hero data');
-    }
+    const ids=await spLoadHeroIds(), id=ids[hero.name];
+    if(!id) throw new Error('hero_id_missing');
+    const j=await spFetchJson(`https://www.dota2.com/datafeed/herodata?hero_id=${encodeURIComponent(id)}&language=russian`,7000);
+    const d=j?.result?.data?.heroes?.[0], text=d?.bio_loc||d?.lore_loc||'';
+    if(Number(d?.id)!==Number(id)) throw new Error('lore_hero_id_mismatch');
+    if(d?.name_english_loc && spNormalizeSimple(d.name_english_loc)!==spNormalizeSimple(hero.name)) throw new Error('lore_hero_name_mismatch');
+    if(!/[А-Яа-яЁё]/.test(text) || spWords(text).length<25) throw new Error('lore_empty');
+    const built=spBuildLoreFromText(hero, text, 'официальный лор Dota 2');
     spMemory.lore.set(hero.name, built); spSetSession('dhh_lore_single_'+hero.name, built); return built;
   }
 
@@ -424,8 +409,9 @@
     if(/^https?:\/\//i.test(s)) return s;
     if(/^\/\//.test(s)) return 'https:'+s;
     if(/\.(mp3|ogg|wav|webm)(\?|$)/i.test(s)){
-      if(s.startsWith('/')) return 'https://dotabase.dillerm.io'+s;
-      return 'https://dotabase.dillerm.io/'+s.replace(/^\/+/, '');
+      const clean=s.replace(/^\/+/, '');
+      if(s.startsWith('/')) return 'https://raw.githubusercontent.com/mdiller/dotabase/master'+s;
+      return 'https://raw.githubusercontent.com/mdiller/dotabase/master/'+clean;
     }
     return '';
   }
@@ -572,6 +558,6 @@
     buildAI:(name)=>spBuildAI(spHeroData(name)),
     voiceSlug:spVoiceSlug,
     kbSlug:spKBSlug,
-    version:'special-modes-v3-reworked'
+    version:'special-modes-v4-polish'
   };
 })();
